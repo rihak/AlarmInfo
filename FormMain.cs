@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-using System.Text;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Xml;
-using System.Xml.Linq;
 
 namespace AlarmInfo
 {
@@ -16,20 +15,22 @@ namespace AlarmInfo
         public string[] filesAEs;
 
         public string[] messagesText;
-        public Dictionary<string, string> message2Id;
+        public Dictionary<string, List<string>> message2Id;
         public Dictionary<string, string> id2Name;
         public Dictionary<string, string> id2InputTag;
         public Dictionary<string, string> id2AckTag;
+
+        private int currentIdIndex = 0;
 
         public FormAlarmInfo()
         {
             InitializeComponent();
             InitializeAEs();
+            resetFields();
         }
 
         public void InitializeAEs()
         {
-
             var appSettings = ConfigurationManager.AppSettings;
             pathAEs = appSettings["pathAEs"] ?? pathAEsDefault;
 
@@ -41,8 +42,7 @@ namespace AlarmInfo
                 return;
             }
 
-            filesAEs = [.. Directory.GetFiles(pathAEs, "*.xml").Select(file => Path.GetFileNameWithoutExtension(file))];
-
+            filesAEs = Directory.GetFiles(pathAEs, "*.xml").Select(file => Path.GetFileNameWithoutExtension(file)).ToArray();
 
             if (filesAEs == null || filesAEs.Length == 0)
             {
@@ -68,8 +68,8 @@ namespace AlarmInfo
             }
             else
             {
-                string query = ComboBoxAE.Text;
-                string[] filtered = filesAEs.Where(s => s.ToLower().Contains(query.ToLower())).ToArray();
+                string query = ComboBoxAE.Text.ToLower();
+                string[] filtered = filesAEs.Where(s => s.ToLower().Contains(query)).ToArray();
                 ComboBoxAE.Items.Clear();
                 ComboBoxAE.Items.AddRange(filtered);
                 ComboBoxAE.DroppedDown = true;
@@ -115,8 +115,8 @@ namespace AlarmInfo
             }
             else
             {
-                string query = ComboBoxMessage.Text;
-                string[] filtered = messagesText.Where(s => s.ToLower().Contains(query.ToLower())).ToArray();
+                string query = ComboBoxMessage.Text.ToLower();
+                string[] filtered = messagesText.Where(s => s.ToLower().Contains(query)).ToArray();
                 ComboBoxMessage.Items.Clear();
                 ComboBoxMessage.Items.AddRange(filtered);
                 ComboBoxMessage.DroppedDown = true;
@@ -140,16 +140,15 @@ namespace AlarmInfo
 
         private void ComboBoxMessage_SelectedValueChanged(object sender, EventArgs e)
         {
+            currentIdIndex = 0;
             fillFields();
         }
 
         private void loadMaps()
         {
-            // Read XML content into string
             string xmlPath = $"{pathAEs}{ComboBoxAE.Text}.xml";
             string xmlContent = File.ReadAllText(xmlPath);
 
-            // Initialize XML object with namespace
             XmlDocument xml = new XmlDocument();
             xml.LoadXml(xmlContent);
             XmlNode root = xml.DocumentElement;
@@ -157,10 +156,7 @@ namespace AlarmInfo
             nsManager.AddNamespace("ns", root.NamespaceURI);
 
 
-            // Load Message To ID Map
-
-            messagesText = null;
-            message2Id = new Dictionary<string, string>();
+            message2Id = new Dictionary<string, List<string>>();
             ComboBoxMessage.Items.Clear();
 
             XmlNodeList messages = xml.SelectNodes("//ns:FTAeDetectorCommand/ns:Messages/ns:Message", nsManager);
@@ -173,17 +169,18 @@ namespace AlarmInfo
                 foreach (XmlNode messageText in messageTexts)
                 {
                     string cleanText = Regex.Replace(Regex.Replace(messageText.InnerText, @"\t|\n|\r", ""), @"\s\s+", " ");
-                    if (messageText.InnerText != null && !message2Id.ContainsKey(cleanText))
+                    if (!string.IsNullOrEmpty(cleanText))
                     {
-                        message2Id.Add(cleanText, id);
+                        if (!message2Id.ContainsKey(cleanText))
+                        {
+                            message2Id[cleanText] = new List<string>();
+                        }
+                        message2Id[cleanText].Add(id);
                     }
                 }
             }
 
             messagesText = message2Id.Keys.ToArray();
-
-
-            // Load ID To X Maps
 
             id2Name = new Dictionary<string, string>();
             id2InputTag = new Dictionary<string, string>();
@@ -213,7 +210,6 @@ namespace AlarmInfo
                         id2Name.Add(messageId, name);
                     }
                 }
-
             }
 
             ComboBoxMessage.Items.AddRange(messagesText);
@@ -224,6 +220,10 @@ namespace AlarmInfo
             TextBoxAlarmName.Text = "";
             TextBoxInputTag.Text = "";
             TextBoxAckTag.Text = "";
+            LabelMessageIndex.Text = "";
+
+            ButtonIdPrevious.Enabled = false;
+            ButtonIdNext.Enabled = false;
         }
 
         private void fillFields()
@@ -234,9 +234,13 @@ namespace AlarmInfo
             {
                 return;
             }
-            string id = message2Id[ComboBoxMessage.Text];
-            if (id != null)
+
+            List<string> ids = message2Id[ComboBoxMessage.Text];
+            if (ids != null && ids.Count > 0)
             {
+                string id = ids[currentIdIndex];
+                LabelMessageIndex.Text = $"{currentIdIndex + 1} / {ids.Count}";
+
                 if (id2Name.ContainsKey(id))
                 {
                     TextBoxAlarmName.Text = id2Name[id];
@@ -249,8 +253,29 @@ namespace AlarmInfo
                 {
                     TextBoxAckTag.Text = id2AckTag[id];
                 }
+
+                ButtonIdPrevious.Enabled = ids.Count > 1 && currentIdIndex > 0;
+                ButtonIdNext.Enabled = ids.Count > 1 && currentIdIndex < ids.Count - 1;
             }
         }
 
+        private void ButtonIdPrevious_Click(object sender, EventArgs e)
+        {
+            if (currentIdIndex > 0)
+            {
+                currentIdIndex--;
+                fillFields();
+            }
+        }
+
+        private void ButtonIdNext_Click(object sender, EventArgs e)
+        {
+            List<string> ids = message2Id[ComboBoxMessage.Text];
+            if (ids != null && currentIdIndex < ids.Count - 1)
+            {
+                currentIdIndex++;
+                fillFields();
+            }
+        }
     }
 }

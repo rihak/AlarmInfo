@@ -39,6 +39,9 @@
             TextBoxAlarmName = new TextBox();
             TextBoxInputTag = new TextBox();
             TextBoxAckTag = new TextBox();
+            ButtonIdPrevious = new Button();
+            ButtonIdNext = new Button();
+            LabelMessageIndex = new Label();
             SuspendLayout();
             // 
             // ComboBoxAE
@@ -47,7 +50,7 @@
             ComboBoxAE.FormattingEnabled = true;
             ComboBoxAE.Location = new Point(46, 12);
             ComboBoxAE.Name = "ComboBoxAE";
-            ComboBoxAE.Size = new Size(726, 23);
+            ComboBoxAE.Size = new Size(925, 23);
             ComboBoxAE.TabIndex = 0;
             ComboBoxAE.TextUpdate += ComboBoxAE_TextUpdate;
             ComboBoxAE.SelectedValueChanged += ComboBoxAE_SelectedValueChanged;
@@ -60,7 +63,7 @@
             ComboBoxMessage.FormattingEnabled = true;
             ComboBoxMessage.Location = new Point(46, 41);
             ComboBoxMessage.Name = "ComboBoxMessage";
-            ComboBoxMessage.Size = new Size(726, 23);
+            ComboBoxMessage.Size = new Size(925, 23);
             ComboBoxMessage.TabIndex = 1;
             ComboBoxMessage.TextUpdate += ComboBoxMessage_TextUpdate;
             ComboBoxMessage.SelectedValueChanged += ComboBoxMessage_SelectedValueChanged;
@@ -91,7 +94,7 @@
             LabelAlarmName.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             LabelAlarmName.AutoSize = true;
             LabelAlarmName.Font = new Font("Cascadia Mono", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            LabelAlarmName.Location = new Point(46, 72);
+            LabelAlarmName.Location = new Point(121, 72);
             LabelAlarmName.Name = "LabelAlarmName";
             LabelAlarmName.Size = new Size(42, 16);
             LabelAlarmName.TabIndex = 4;
@@ -102,7 +105,7 @@
             LabelInputTag.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             LabelInputTag.AutoSize = true;
             LabelInputTag.Font = new Font("Cascadia Mono", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            LabelInputTag.Location = new Point(46, 101);
+            LabelInputTag.Location = new Point(121, 101);
             LabelInputTag.Name = "LabelInputTag";
             LabelInputTag.Size = new Size(42, 16);
             LabelInputTag.TabIndex = 5;
@@ -113,7 +116,7 @@
             LabelAckTag.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             LabelAckTag.AutoSize = true;
             LabelAckTag.Font = new Font("Cascadia Mono", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            LabelAckTag.Location = new Point(46, 130);
+            LabelAckTag.Location = new Point(121, 130);
             LabelAckTag.Name = "LabelAckTag";
             LabelAckTag.Size = new Size(42, 16);
             LabelAckTag.TabIndex = 6;
@@ -122,35 +125,71 @@
             // TextBoxAlarmName
             // 
             TextBoxAlarmName.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            TextBoxAlarmName.Location = new Point(94, 70);
+            TextBoxAlarmName.Location = new Point(169, 70);
             TextBoxAlarmName.Name = "TextBoxAlarmName";
             TextBoxAlarmName.ReadOnly = true;
-            TextBoxAlarmName.Size = new Size(678, 23);
+            TextBoxAlarmName.Size = new Size(800, 23);
             TextBoxAlarmName.TabIndex = 7;
             // 
             // TextBoxInputTag
             // 
             TextBoxInputTag.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            TextBoxInputTag.Location = new Point(94, 99);
+            TextBoxInputTag.Location = new Point(169, 99);
             TextBoxInputTag.Name = "TextBoxInputTag";
             TextBoxInputTag.ReadOnly = true;
-            TextBoxInputTag.Size = new Size(678, 23);
+            TextBoxInputTag.Size = new Size(803, 23);
             TextBoxInputTag.TabIndex = 8;
             // 
             // TextBoxAckTag
             // 
             TextBoxAckTag.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            TextBoxAckTag.Location = new Point(94, 128);
+            TextBoxAckTag.Location = new Point(169, 128);
             TextBoxAckTag.Name = "TextBoxAckTag";
             TextBoxAckTag.ReadOnly = true;
-            TextBoxAckTag.Size = new Size(678, 23);
+            TextBoxAckTag.Size = new Size(803, 23);
             TextBoxAckTag.TabIndex = 9;
+            // 
+            // ButtonIdPrevious
+            // 
+            ButtonIdPrevious.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            ButtonIdPrevious.Location = new Point(46, 70);
+            ButtonIdPrevious.Name = "ButtonIdPrevious";
+            ButtonIdPrevious.Size = new Size(58, 23);
+            ButtonIdPrevious.TabIndex = 10;
+            ButtonIdPrevious.Text = "↑";
+            ButtonIdPrevious.UseVisualStyleBackColor = true;
+            ButtonIdPrevious.Click += ButtonIdPrevious_Click;
+            // 
+            // ButtonIdNext
+            // 
+            ButtonIdNext.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            ButtonIdNext.Location = new Point(46, 128);
+            ButtonIdNext.Name = "ButtonIdNext";
+            ButtonIdNext.Size = new Size(58, 23);
+            ButtonIdNext.TabIndex = 11;
+            ButtonIdNext.Text = "↓";
+            ButtonIdNext.UseVisualStyleBackColor = true;
+            ButtonIdNext.Click += ButtonIdNext_Click;
+            // 
+            // LabelMessageIndex
+            // 
+            LabelMessageIndex.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            LabelMessageIndex.AutoSize = true;
+            LabelMessageIndex.Font = new Font("Cascadia Mono", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            LabelMessageIndex.Location = new Point(54, 102);
+            LabelMessageIndex.Name = "LabelMessageIndex";
+            LabelMessageIndex.Size = new Size(42, 16);
+            LabelMessageIndex.TabIndex = 12;
+            LabelMessageIndex.Text = "X / Y";
             // 
             // FormAlarmInfo
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(784, 161);
+            ClientSize = new Size(984, 161);
+            Controls.Add(LabelMessageIndex);
+            Controls.Add(ButtonIdNext);
+            Controls.Add(ButtonIdPrevious);
             Controls.Add(TextBoxAckTag);
             Controls.Add(TextBoxInputTag);
             Controls.Add(TextBoxAlarmName);
@@ -162,7 +201,7 @@
             Controls.Add(ComboBoxMessage);
             Controls.Add(ComboBoxAE);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            MinimumSize = new Size(800, 200);
+            MinimumSize = new Size(1000, 200);
             Name = "FormAlarmInfo";
             Text = "AlarmInfo";
             ResumeLayout(false);
@@ -181,5 +220,8 @@
         private TextBox TextBoxAlarmName;
         private TextBox TextBoxInputTag;
         private TextBox TextBoxAckTag;
+        private Button ButtonIdPrevious;
+        private Button ButtonIdNext;
+        private Label LabelMessageIndex;
     }
 }
